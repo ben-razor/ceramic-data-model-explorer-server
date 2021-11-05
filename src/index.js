@@ -62,7 +62,7 @@ app.use(cors(corsOptionsDelegate));
 const __dirname = new URL('.', import.meta.url).pathname;
 let dbFile = process.env.DB_FILE || __dirname + 'db/ceramic_models.db';
 console.log('dbFile', dbFile);
-let db = sqlite3(dbFile);
+let db = new sqlite3(dbFile);
 let cdb = new CeramicDB(db);
 
 const testDid = 'did:3:kjzl6cwe1jw146h55xwym8jxgbn1rd86k2km1p5q06u19wa3y5ob9948k9pq22n';
