@@ -64,48 +64,47 @@ class CeramicDB {
     }
 
     addModel(modelid, version, author, keywords, readme, package_json, schemas, user_model_info, cb) {
-        this.db.serialize(() => {
-            let q = `
-                INSERT OR REPLACE INTO models(modelid, version, author, keywords, readme, package_json) 
-                VALUES (?, ?, ?, ?, ?, ?)
+        let q = `
+            INSERT OR REPLACE INTO models(modelid, version, author, keywords, readme, package_json) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `
+
+        let values = [modelid, version, author, keywords, readme, JSON.stringify(package_json)]
+
+        try {
+            this.db.prepare(q).run(values);
+
+            let qSchemas = `
+                INSERT OR REPLACE INTO schemas(schema_path, modelid, schema_name, schema_json)
+                VALUES (?, ?, ?, ?)
             `
 
-            let values = [modelid, version, author, keywords, readme, JSON.stringify(package_json)]
+            let schema_tuples = [];
+            for(let schema of schemas) {
+                schema_tuples.push(
+                    [schema['path'], modelid, schema['name'], JSON.stringify(schema['schema_json'])]
+                )
+            }
 
-            this.db.run(q, values, (err) => {
-                let qSchemas = `
-                    INSERT OR REPLACE INTO schemas(schema_path, modelid, schema_name, schema_json)
-                    VALUES (?, ?, ?, ?)
+            this.db.prepare(qSchemas).run(schema_tuples.flat());
+
+            if(user_model_info) {
+                let qUserModels = `
+                    INSERT OR REPLACE INTO user_models(modelid, userid, npm_package, repo_url, status, last_updated)
+                    VALUES (?, ?, ?, ?, ?, datetime('now'))
                 `
 
-                let schema_tuples = [];
-                for(let schema of schemas) {
-                    schema_tuples.push(
-                        [schema['path'], modelid, schema['name'], JSON.stringify(schema['schema_json'])]
-                    )
-                }
+                let valuesUserModel = [modelid, user_model_info['userid'], user_model_info['npm_package'], 
+                        user_model_info['repo_url'], user_model_info['status']]
+                
+                this.db.prepare(qUserModels).run(valuesUserModel);
+            }
 
-                this.db.run(qSchemas, schema_tuples.flat(), (schemasErr) => {
-                    if(user_model_info) {
-                        let qUserModels = `
-                            INSERT OR REPLACE INTO user_models(modelid, userid, npm_package, repo_url, status, last_updated)
-                            VALUES (?, ?, ?, ?, ?, datetime('now'))
-                        `
-
-                        let valuesUserModel = [modelid, user_model_info['userid'], user_model_info['npm_package'], 
-                                user_model_info['repo_url'], user_model_info['status']]
-                        
-                        this.db.run(qUserModels, valuesUserModel, (userModelsErr) => {
-                            console.log('User model added: ', valuesUserModel);
-                            cb(userModelsErr, modelid);
-                        })
-                    }
-                    else {
-                        cb(schemasErr, modelid)
-                    }
-                })
-            })
-        });
+            cb('', modelid);
+        }
+        catch(err) {
+            cb(err)
+        }
     }
 
     getModels(cb) {
