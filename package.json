@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node src/index.js",
+    "dev": "nodemon src/index.js",
     "rollup": "rollup --config rollup.config.js && cd build; node rollup.cjs"
   },
   "author": "Ben Razor",

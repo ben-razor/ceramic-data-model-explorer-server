@@ -270,11 +270,10 @@ class CeramicDB {
         `
 
         try {
-            this.db.transaction(() => {
+            let tx = this.db.transaction(() => {
                 let info = this.db.prepare(q).run([name, image_url, description, userid, app_url]);
 
                 let applicationId = info.lastInsertRowid;
-                console.log('inserted application: ', applicationId);
 
                 let q2 = `
                     INSERT INTO application_models(application_id, modelid)
@@ -286,14 +285,14 @@ class CeramicDB {
                     appModels = appModels.concat( [applicationId, modelId] )
                 }
 
-                db.prepare(q2).run(appModels);
+                this.db.prepare(q2).run(appModels);
                 cb();
-            })
+            });
+            tx();
         }
         catch(err) {
             cb(err)
         }
-
     }
 }
 

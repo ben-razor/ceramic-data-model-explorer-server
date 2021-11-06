@@ -750,7 +750,7 @@ app.post('/api/applications', verify(), async(req, res) => {
             if(err) {
                 let [status, resp] = getErrorResponse(500, 'error-db-error');
                 res.status(status).json(resp);
-                console.log(e);
+                console.log(err);
             }
             else {
                 let data = {'add app: ': [name, imageURL, description, userId, appURL, dataModelIds]}

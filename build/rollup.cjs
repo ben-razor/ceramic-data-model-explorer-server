@@ -93541,6 +93541,7 @@ class CeramicDB {
             VALUES (?, ?, ?, ?, ?, datetime('now'))
         `;
 
+        console.log('in add app');
         try {
             this.db.transaction(() => {
                 let info = this.db.prepare(q).run([name, image_url, description, userid, app_url]);
