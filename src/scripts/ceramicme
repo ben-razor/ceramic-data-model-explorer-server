@@ -14,7 +14,7 @@
 # Process name ( For display )
 NAME=ceramicme
 # Daemon name, where is the actual executable
-DAEMON=/home/chrisb/start_ceramicv2
+DAEMON=/home/chrisb/start_ceramicme
 # pid file for the daemon
 PIDFILE=/var/run/my_daemon.pid
 
