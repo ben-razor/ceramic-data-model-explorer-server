@@ -514,6 +514,7 @@ app.post('/api/stats', async(req, res) => {
     let body = req.body;
     let modelIdSupplied = 'modelid' in body;
     let packageIdSupplied = 'packageid' in body;
+    let reason = 'ok';
 
     if(modelIdSupplied && packageIdSupplied) {
         let modelid = body.modelid.trim()

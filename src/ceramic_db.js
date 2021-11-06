@@ -5,7 +5,7 @@ class CeramicDB {
     constructor(db) {
         this.db = db;
 
-        db.transaction(() => {
+        let tx = db.transaction(() => {
             db.prepare(createTableSQL.create_ratings_sql).run();
             db.prepare(createTableSQL.create_models_sql).run();
             db.prepare(createTableSQL.create_schemas_sql).run();
@@ -16,6 +16,8 @@ class CeramicDB {
             db.prepare(createTableSQL.create_applications_sql).run();
             db.prepare(createTableSQL.create_application_models_sql).run();
         });
+
+        tx();
     }
 
     rate(userid, modelid, rating, comment, cb) {
@@ -72,35 +74,39 @@ class CeramicDB {
         let values = [modelid, version, author, keywords, readme, JSON.stringify(package_json)]
 
         try {
-            this.db.prepare(q).run(values);
+            let tx = this.db.transaction(() => {
+                this.db.prepare(q).run(values);
 
-            let qSchemas = `
-                INSERT OR REPLACE INTO schemas(schema_path, modelid, schema_name, schema_json)
-                VALUES (?, ?, ?, ?)
-            `
-
-            let schema_tuples = [];
-            for(let schema of schemas) {
-                schema_tuples.push(
-                    [schema['path'], modelid, schema['name'], JSON.stringify(schema['schema_json'])]
-                )
-            }
-
-            this.db.prepare(qSchemas).run(schema_tuples.flat());
-
-            if(user_model_info) {
-                let qUserModels = `
-                    INSERT OR REPLACE INTO user_models(modelid, userid, npm_package, repo_url, status, last_updated)
-                    VALUES (?, ?, ?, ?, ?, datetime('now'))
+                let qSchemas = `
+                    INSERT OR REPLACE INTO schemas(schema_path, modelid, schema_name, schema_json)
+                    VALUES (?, ?, ?, ?)
                 `
 
-                let valuesUserModel = [modelid, user_model_info['userid'], user_model_info['npm_package'], 
-                        user_model_info['repo_url'], user_model_info['status']]
-                
-                this.db.prepare(qUserModels).run(valuesUserModel);
-            }
+                let schema_tuples = [];
+                for(let schema of schemas) {
+                    schema_tuples.push(
+                        [schema['path'], modelid, schema['name'], JSON.stringify(schema['schema_json'])]
+                    )
+                }
 
-            cb('', modelid);
+                this.db.prepare(qSchemas).run(schema_tuples.flat());
+
+                if(user_model_info) {
+                    let qUserModels = `
+                        INSERT OR REPLACE INTO user_models(modelid, userid, npm_package, repo_url, status, last_updated)
+                        VALUES (?, ?, ?, ?, ?, datetime('now'))
+                    `
+
+                    let valuesUserModel = [modelid, user_model_info['userid'], user_model_info['npm_package'], 
+                            user_model_info['repo_url'], user_model_info['status']]
+                    
+                    this.db.prepare(qUserModels).run(valuesUserModel);
+                }
+
+                cb('', modelid);
+            });
+            
+            tx();
         }
         catch(err) {
             cb(err)
