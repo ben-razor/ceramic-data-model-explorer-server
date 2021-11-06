@@ -1,7 +1,7 @@
 {
-  "name": "my-webpack-project",
+  "name": "@benrazor/ceramic-model-explorer-server",
   "version": "1.0.0",
-  "description": "My webpack project",
+  "description": "Ceramic Model Explorer Server",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -9,10 +9,9 @@
     "dev": "node src/index.js",
     "rollup": "rollup --config rollup.config.js && cd build; node rollup.cjs"
   },
-  "author": "",
+  "author": "Ben Razor",
   "license": "ISC",
   "dependencies": {
-    "@babel/runtime": "^7.15.4",
     "@ceramicnetwork/3id-did-resolver": "^1.4.5",
     "@ceramicnetwork/http-client": "^1.4.1",
     "better-sqlite3": "^7.4.4",
@@ -22,9 +21,7 @@
     "express": "^4.17.1",
     "https": "^1.0.0",
     "node-fetch": "^3.0.0",
-    "nodemon": "^2.0.14",
-    "rimraf": "^3.0.2",
-    "sqlite3": "^5.0.2"
+    "nodemon": "^2.0.14"
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",
