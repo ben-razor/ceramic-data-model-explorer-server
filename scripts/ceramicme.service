@@ -1,0 +1,9 @@
+[Unit]
+Description=Ceramic Model Explorer Server
+
+[Service]
+Type=simple
+ExecStart=/home/chrisb/start_ceramicme
+
+[Install]
+WantedBy=multi-user.target

@@ -39,7 +39,7 @@ var corsOptionsDelegate = function (req, callback) {
         allowList = ['http://localhost', 'https://localhost'];
     }
 
-    let origin = req.header('Origin');
+    let origin = req.header('Origin'); 
     let corsOptions;
 
     if(origin) {
@@ -167,7 +167,8 @@ function getSuccessResponse(data) {
 }
 
 app.get('/', async (req, res) => {
-    res.send('Johnny 5 is alive!');
+    let [status, resp] = getSuccessResponse({'message': 'Johnny 5 is alive!'});
+    res.status(status).send(resp);
 });
 
 app.get('/api/get_model_ratings', async(req, res) => {

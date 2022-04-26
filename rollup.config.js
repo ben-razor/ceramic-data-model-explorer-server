@@ -6,7 +6,7 @@ import nativePlugin from 'rollup-plugin-natives';
 export default {
   input: 'src/index.js',
   output: {
-    file: 'build/rollup.cjs',
+    file: 'build/ceramicme.cjs',
     format: 'cjs'
   },
   external: [

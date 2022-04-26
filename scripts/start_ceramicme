@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd /var/www/ceramicme
+npm run prod

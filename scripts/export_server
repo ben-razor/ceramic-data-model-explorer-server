@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+name=ceramicme
+local_path=~/dev/crypto1/ceramic/ceramic-data-model-explorer-server
+temp_path=~/dev/crypto1/ceramic/${name}-server-temp
+export_dir=$temp_path/$name
+
+# Export aqua compile code
+cd $local_path
+mkdir -p $export_dir
+cp package.json $export_dir
+cp scripts/${name}.service $export_dir
+cp scripts/start_${name} $export_dir
+rsync -az build $export_dir
+cd $temp_path
+zip -rq $name.zip $name 
+mkdir -p ${name}_temp
+cp $name.zip ${name}_temp/$name.zip
+gcloud compute scp --recurse ${name}_temp benrazor-1:$HOME/dev/
+rm -rf $temp_path
+cd $local_path
+

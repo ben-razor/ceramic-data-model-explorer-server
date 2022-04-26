@@ -1,0 +1,21 @@
+# Copy aqua compile code and init script
+#gcloud compute ssh benrazor-1
+name=ceramicme
+service_name=${name}.service
+mkdir -p /var/www/$name
+mkdir -p /var/www/${name}_bk
+sudo rsync -az /var/www/$name/ /var/www/${name}_bk
+cd $HOME/dev/${name}_temp && unzip -oq $name.zip
+sudo rsync -az $HOME/dev/${name}_temp/$name /var/www/
+cd $HOME
+
+# Copy start script
+sudo cp /var/www/$name/start_${name} start_$name
+sudo chmod 755 start_$name
+sudo chown $USER:$USER start_$name
+# Copy init script
+sudo cp /var/www/$name/$service_name /etc/systemd/system/$service_name
+sudo chmod 644 /etc/systemd/system/$service_name
+
+sudo systemctl enable $name
+sudo systemctl start $name
